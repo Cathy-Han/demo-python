@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from matplotlib.finance import candlesstick_ohlc
+#from matplotlib.finance import candlesstick_ohlc
 import datetime
 
 def MA(csv_data):
@@ -28,7 +28,7 @@ def MA(csv_data):
     return MA
 
 
-aapl = [line.strip('\n').split(",") for line in open('aapl.csv')][1:]
+aapl = [line.strip('\n').split(",") for line in open('data/SIF2021022004.csv')][1:]
 Time = [datetime.datetime.strptime(line[0],"%Y-%m-%d") for line in aapl]
 Time1 = [mdates.date2num(line) for line in Time]
 Price = [round(float(line[4])) for line in aapl]

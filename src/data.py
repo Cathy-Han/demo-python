@@ -30,12 +30,18 @@ class DataPrepare():
         df = YahooQuotesReader("SI=F",start=start,end=end).read()
         df.to_csv('silver_hours.csv',columns=df.columns,index=True)
 
-    def DataReadPerHours(self):
-        url="https://query1.finance.yahoo.com/v8/finance/chart/SI=F?symbol=SI%3DF&interval=60m"
+    def DataReadPerHours(self,interval):
+        today = datetime.date.today()
+        start = datetime.datetime.strftime(today-datetime.timedelta(200,0),"%Y-%m-%d")
+        print(start)
+        period1=round(time.mktime(time.strptime(start,"%Y-%m-%d")))
+        period2=round(time.time())
+        url="https://query1.finance.yahoo.com/v8/finance/chart/SI=F?symbol=SI%3DF&period1={}&period2={}&interval={}"
+        url=url.format(period1,period2,interval)
+        print(url)
         r=requests.get(url)
         print("Status Code:",r.status_code)
         response_json=r.json()
-        print(response_json)
         with open(self.filename,'w') as f_obj:
             json.dump(response_json,f_obj)
 
@@ -52,9 +58,11 @@ class DataPrepare():
         high_array=json_obj["chart"]["result"][0]["indicators"]["quote"][0]["high"]
         d={'timestamp':timestamp_array,'open':open_array,'volume':volume_array,'low':low_array,'close':close_array,'high':high_array}
         df = pd.DataFrame(data=d)
+        df.dropna(subset=['close'],inplace=True) #移除空数据
         #print(df)
         csv_file=self.filename.replace(".json",".csv")
-        df.to_csv(csv_file,columns=df.columns,index=True)
+        df.to_csv(csv_file,columns=df.columns,index=False)
 
-
-#DataPrepare().Json2Csv()
+dp=DataPrepare()
+#dp.DataReadPerHours('60m') #获取60min数据
+dp.Json2Csv()
