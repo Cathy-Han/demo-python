@@ -32,20 +32,24 @@ class DataPrepare():
         df.to_csv('silver_hours.csv',columns=df.columns,index=True)
 
     def DataReadPerHours(self,interval):
-        today = datetime.date.today()
-        start = datetime.datetime.strftime(today-datetime.timedelta(200,0),"%Y-%m-%d")
-        print(start)
-        period1=round(time.mktime(time.strptime(start,"%Y-%m-%d")))
-        period2=round(time.time())
-        url="https://query1.finance.yahoo.com/v8/finance/chart/SI=F?symbol=SI%3DF&period1={}&period2={}&interval={}"
-        url=url.format(period1,period2,interval)
-        print(url)
-        r=requests.get(url)
-        print("Status Code:",r.status_code)
-        response_json=r.json()
-        with open(self.filename,'w') as f_obj:
-            json.dump(response_json,f_obj)
-
+        try:
+            today = datetime.date.today()
+            start = datetime.datetime.strftime(today-datetime.timedelta(200,0),"%Y-%m-%d")
+            print(start)
+            period1=round(time.mktime(time.strptime(start,"%Y-%m-%d")))
+            period2=round(time.time())
+            url="https://query1.finance.yahoo.com/v8/finance/chart/SI=F?symbol=SI%3DF&period1={}&period2={}&interval={}"
+            url=url.format(period1,period2,interval)
+            print(url)
+            r=requests.get(url)
+            print("Status Code:",r.status_code)
+            response_json=r.json()
+            with open(self.filename,'w') as f_obj:
+                json.dump(response_json,f_obj)
+        except:
+            return False
+        else:
+            return True
 
     def Json2Csv(self):
         print("transfer begin")
@@ -64,6 +68,12 @@ class DataPrepare():
         csv_file=self.filename.replace(".json",".csv")
         df.to_csv(csv_file,columns=df.columns,index=False)
 
-dp=DataPrepare()
-dp.DataReadPerHours('60m') #获取60min数据
-dp.Json2Csv()
+    def Load(self):
+        #dp=DataPrepare()
+        res = self.DataReadPerHours('60m') #获取60min数据
+        if res==False:
+            counts=10
+            while res==False and counts>0:
+                res = self.DataReadPerHours('60m')
+                counts-=1
+        self.Json2Csv()
