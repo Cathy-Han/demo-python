@@ -8,13 +8,14 @@ import time
 import requests
 import json
 
-class DataPrepare():
+# def GetFileTimePrefix():
+#     TimeStr = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
+#     Time = datetime.datetime.strptime(TimeStr,"%Y-%m-%d %H:%M:%S")
+#     LastTime = Time-datetime.timedelta(0,3600)
+#     return datetime.datetime.strftime(LastTime,"%Y%m%d%H")
 
-    TimeStr = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
-    Time = datetime.datetime.strptime(TimeStr,"%Y-%m-%d %H:%M:%S")
-    LastTime = Time-datetime.timedelta(0,3600)
-    filename="data/SIF"+datetime.datetime.strftime(LastTime,"%Y%m%d%H")+".json"
-    print(filename)
+class DataPrepare():
+    filename="data/SIF.json"
 
     def DataFrom_DataReader(self):
         start=datetime.datetime(2021,2,15)
@@ -64,5 +65,5 @@ class DataPrepare():
         df.to_csv(csv_file,columns=df.columns,index=False)
 
 dp=DataPrepare()
-#dp.DataReadPerHours('60m') #获取60min数据
+dp.DataReadPerHours('60m') #获取60min数据
 dp.Json2Csv()
